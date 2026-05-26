@@ -1,0 +1,21 @@
+# Compiled binary
+mainsecurity.exe
+*.exe
+
+# Object files
+*.o
+*.obj
+
+# SFML DLLs (not needed - project uses static linking)
+*.dll
+
+# Encrypted user data (generated at runtime)
+secure_storage/
+
+# VS Code local settings
+.vscode/settings.json
+.vscode/launch.json
+
+# Windows artifacts
+Thumbs.db
+desktop.ini
