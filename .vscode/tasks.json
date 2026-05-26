@@ -1,0 +1,44 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build: Secure File Storage",
+            "type": "shell",
+            "command": "${env:USERPROFILE}\\scoop\\apps\\gcc\\current\\bin\\g++.exe",
+            "args": [
+                "-std=c++17",
+                "-Wall",
+                "-o", "mainsecurity.exe",
+                "main.cpp",
+                "encryption.cpp",
+                "fileManager.cpp",
+                "auth.cpp",
+                "gui.cpp",
+                "-I${env:USERPROFILE}\\SFML\\include",
+                "-L${env:USERPROFILE}\\SFML\\lib",
+                "-DSFML_STATIC",
+                "-lsfml-graphics-s",
+                "-lsfml-window-s",
+                "-lsfml-system-s",
+                "-lfreetype",
+                "-lopengl32",
+                "-lgdi32",
+                "-lwinmm",
+                "-static-libgcc",
+                "-static-libstdc++",
+                "-mwindows"
+            ],
+            "group": { "kind": "build", "isDefault": true },
+            "problemMatcher": ["$gcc"],
+            "detail": "Compiles all modules with SFML GUI into mainsecurity.exe"
+        },
+        {
+            "label": "Run: Secure File Storage",
+            "type": "shell",
+            "command": ".\\mainsecurity.exe",
+            "group": "test",
+            "dependsOn": "Build: Secure File Storage",
+            "problemMatcher": []
+        }
+    ]
+}
