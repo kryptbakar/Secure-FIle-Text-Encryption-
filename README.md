@@ -3,6 +3,9 @@
 [![C++](https://img.shields.io/badge/C%2B%2B-17-blue)](https://en.cppreference.com/w/cpp/17)
 [![SFML](https://img.shields.io/badge/SFML-2.6.x-brightgreen)](https://www.sfml-dev.org/)
 
+## Project Description
+C++ desktop application for encrypting and decrypting files and text. Features a GUI, secure authentication, and modular encryption/file management components.
+
 ---
 
 ## 🚀 Project Overview
