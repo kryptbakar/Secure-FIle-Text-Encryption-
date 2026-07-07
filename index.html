@@ -1,1 +1,310 @@
-PLACEHOLDER
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Secure File Storage System</title>
+<style>
+  :root {
+    --bg: #0b0f14;
+    --bg-alt: #111823;
+    --panel: #141d2b;
+    --border: #223047;
+    --text: #e6edf3;
+    --text-dim: #9fb0c3;
+    --accent: #35e0a1;
+    --accent-2: #4f9cf9;
+    --danger: #f97b6b;
+    --mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #f4f7fb;
+      --bg-alt: #ffffff;
+      --panel: #ffffff;
+      --border: #dde5ef;
+      --text: #101722;
+      --text-dim: #4c5b6e;
+      --accent: #0f9d68;
+      --accent-2: #1a6fd1;
+      --danger: #c8402f;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+  a { color: var(--accent-2); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .cipher-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(53,224,161,0.08), transparent 40%),
+      radial-gradient(circle at 85% 75%, rgba(79,156,249,0.10), transparent 45%),
+      repeating-linear-gradient(45deg, rgba(255,255,255,0.015) 0 2px, transparent 2px 40px),
+      var(--bg);
+  }
+
+  header.hero {
+    text-align: center;
+    padding: 6rem 1.5rem 4rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .lock-icon {
+    width: 68px;
+    height: 68px;
+    margin: 0 auto 1.5rem;
+    position: relative;
+  }
+  .lock-icon .shackle {
+    position: absolute;
+    top: 0; left: 50%;
+    width: 34px; height: 30px;
+    margin-left: -17px;
+    border: 6px solid var(--accent);
+    border-bottom: none;
+    border-radius: 20px 20px 0 0;
+  }
+  .lock-icon .body {
+    position: absolute;
+    bottom: 0; left: 50%;
+    width: 56px; height: 40px;
+    margin-left: -28px;
+    background: linear-gradient(160deg, var(--accent), var(--accent-2));
+    border-radius: 8px;
+  }
+  .lock-icon .keyhole {
+    position: absolute;
+    bottom: 14px; left: 50%;
+    width: 8px; height: 8px;
+    margin-left: -4px;
+    background: var(--bg);
+    border-radius: 50%;
+  }
+  .lock-icon .keyhole::after {
+    content: '';
+    position: absolute;
+    top: 6px; left: 2px;
+    width: 4px; height: 8px;
+    background: var(--bg);
+  }
+
+  h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    margin: 0 0 0.75rem;
+    letter-spacing: -0.02em;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .tagline {
+    font-size: clamp(1rem, 2.2vw, 1.25rem);
+    color: var(--text-dim);
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  .badges {
+    display: flex;
+    justify-content: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    margin-top: 1.75rem;
+  }
+  .badge {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    padding: 0.3rem 0.7rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--text-dim);
+    background: var(--bg-alt);
+  }
+
+  main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 1.5rem 5rem;
+  }
+  section {
+    margin-bottom: 3.5rem;
+  }
+  h2 {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--accent);
+    font-family: var(--mono);
+    margin-bottom: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  h2::before {
+    content: '';
+    width: 20px; height: 1px;
+    background: var(--accent);
+    display: inline-block;
+  }
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.75rem;
+  }
+  .about p { color: var(--text-dim); margin: 0 0 0.9rem; }
+  .about p:last-child { margin-bottom: 0; }
+
+  ul.features {
+    list-style: none;
+    margin: 0; padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+  }
+  ul.features li {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.1rem 1.2rem;
+    color: var(--text-dim);
+    font-size: 0.95rem;
+  }
+  ul.features li strong {
+    display: block;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 0.92rem;
+    margin-bottom: 0.35rem;
+  }
+  ul.features li strong::before {
+    content: '▹ ';
+    color: var(--accent);
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+  .tag {
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--bg-alt);
+    color: var(--accent-2);
+  }
+  .tag.warn { color: var(--danger); border-color: var(--danger); }
+
+  .notice {
+    border-left: 3px solid var(--danger);
+    background: var(--bg-alt);
+    padding: 1rem 1.25rem;
+    border-radius: 0 8px 8px 0;
+    color: var(--text-dim);
+    font-size: 0.92rem;
+  }
+  .notice strong { color: var(--danger); }
+
+  footer {
+    text-align: center;
+    padding: 2.5rem 1.5rem 3.5rem;
+    border-top: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 0.9rem;
+  }
+  footer .repo-link {
+    display: inline-block;
+    margin-top: 0.5rem;
+    font-family: var(--mono);
+  }
+
+  code {
+    font-family: var(--mono);
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.9em;
+  }
+</style>
+</head>
+<body>
+<div class="cipher-bg"></div>
+
+<header class="hero">
+  <div class="lock-icon">
+    <div class="shackle"></div>
+    <div class="body"></div>
+    <div class="keyhole"></div>
+  </div>
+  <h1>Secure File Storage System</h1>
+  <p class="tagline">A C++17 desktop application for encrypting and decrypting files and text, with role-based access control and a custom file-index engine.</p>
+  <div class="badges">
+    <span class="badge">C++17</span>
+    <span class="badge">SFML 2.6.x</span>
+    <span class="badge">Windows 10+</span>
+  </div>
+</header>
+
+<main>
+  <section class="about">
+    <h2>About</h2>
+    <div class="panel">
+      <p>Secure File Storage System is a console + GUI application that demonstrates a complete mini secure-storage workflow: create, view, delete, and search files whose contents are encrypted at rest. It combines XOR-based encryption, djb2-hashed credential storage, and role-based authentication (ADMIN / USER / GUEST) with a custom singly-linked-list index to track and traverse stored files.</p>
+      <p>Built entirely in C++17 with an SFML graphical interface, the project is designed as an educational exploration of cryptography fundamentals, access control, and hand-rolled data structures rather than a production-grade security tool.</p>
+    </div>
+  </section>
+
+  <section class="features">
+    <h2>Features</h2>
+    <ul class="features">
+      <li><strong>Encrypt / decrypt on demand</strong>Files are XOR-encrypted with hex encoding before being written to disk, and decrypted transparently on read.</li>
+      <li><strong>Role-based access control</strong>ADMIN, USER, and GUEST roles enforce distinct permissions for creating, viewing, deleting, and registering files or users.</li>
+      <li><strong>Linked-list file index</strong>A custom singly-linked list tracks file metadata in memory and supports traversal-based search.</li>
+      <li><strong>SFML graphical interface</strong>Dark-themed login screen, file browser, and dialogs built with SFML.</li>
+      <li><strong>Persistent encrypted storage</strong>Encrypted files and the index survive across application restarts in <code>secure_storage/</code>.</li>
+      <li><strong>Hashed credential store</strong>Passwords are verified against a djb2-hashed store rather than kept in plaintext.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Tech Stack &amp; Cryptography</h2>
+    <div class="tags">
+      <span class="tag">C++17</span>
+      <span class="tag">SFML 2.6.x</span>
+      <span class="tag">g++ / MinGW-w64</span>
+      <span class="tag">XOR Encryption</span>
+      <span class="tag">djb2 Hashing</span>
+      <span class="tag">Linked-List Indexing</span>
+      <span class="tag">RBAC (ADMIN/USER/GUEST)</span>
+      <span class="tag warn">Windows 10+</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>A Note on Security</h2>
+    <div class="notice">
+      <strong>Educational project.</strong> XOR encryption is not secure against modern attackers and is used here to demonstrate concepts, not to protect real data. The README recommends AES-GCM or libsodium, Argon2/bcrypt/scrypt password hashing, and AEAD integrity checks for any real-world hardening.
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div>Explore the source, build instructions, and default accounts in the repository.</div>
+  <a class="repo-link" href="https://github.com/kryptbakar/Secure-FIle-Text-Encryption-">github.com/kryptbakar/Secure-FIle-Text-Encryption-</a>
+</footer>
+
+</body>
+</html>
